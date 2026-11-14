@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guess the Share</title>
-<meta name="description" content="Out of every 100 people in the U.S., how many are immigrants? Make five guesses, then see the real numbers and what most Americans guess.">
+<meta name="description" content="Out of every 100 people in the U.S., how many are immigrants? Make seven guesses, then see the real numbers, what most Americans guess, and how the picture has changed since 1850.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gsharpokie.github.io/immigrantshare/">
 <meta property="og:title" content="Guess the Share">
-<meta property="og:description" content="Out of every 100 people in the U.S., how many are immigrants? Make five guesses, then see the real numbers and what most Americans guess.">
+<meta property="og:description" content="Out of every 100 people in the U.S., how many are immigrants? Make seven guesses, then see the real numbers, what most Americans guess, and how the picture has changed since 1850.">
 <meta property="og:image" content="https://gsharpokie.github.io/immigrantshare/preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@gsharpokie">
 <meta name="twitter:title" content="Guess the Share">
-<meta name="twitter:description" content="Out of every 100 people in the U.S., how many are immigrants? Make five guesses, then see the real numbers and what most Americans guess.">
+<meta name="twitter:description" content="Out of every 100 people in the U.S., how many are immigrants? Make seven guesses, then see the real numbers, what most Americans guess, and how the picture has changed since 1850.">
 <meta name="twitter:image" content="https://gsharpokie.github.io/immigrantshare/preview.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23242a4a'/%3E%3Ccircle cx='9' cy='9' r='3.5' fill='%23f29e4c'/%3E%3Ccircle cx='16' cy='9' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='23' cy='9' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='9' cy='16' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='23' cy='16' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='9' cy='23' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='16' cy='23' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='23' cy='23' r='3.5' fill='%23c9cde6'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +28,7 @@
 :root {
   --paper: #f3f3f7; --surface: #ffffff; --ink: #1d2140; --muted: #5b6080; --line: #d7d9e6;
   --you: #b3541e; --actual: #2a4fa8; --others: #8a5aa8; --dot: #d3d6e6;
+  --r-eu: #2a4fa8; --r-na: #7a8fc4; --r-la: #b3541e; --r-as: #2f7d6b; --r-af: #8a5aa8; --r-ot: #8d91a8; --onseg: #ffffff;
   --focus: #b3541e;
   --display: "Sora", "Segoe UI", system-ui, sans-serif;
   --body: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -37,11 +38,13 @@
   :root:not([data-theme="light"]) {
     --paper: #12142a; --surface: #1b1e3a; --ink: #eceefa; --muted: #a5a9c8; --line: #33375a;
     --you: #f29e4c; --actual: #8fb0ff; --others: #c9a3e6; --dot: #3a3e63; --focus: #f29e4c; color-scheme: dark;
+  --r-eu: #8fb0ff; --r-na: #5f74ad; --r-la: #f29e4c; --r-as: #6fcab4; --r-af: #c9a3e6; --r-ot: #7d819c; --onseg: #12142a;
   }
 }
 :root[data-theme="dark"] {
   --paper: #12142a; --surface: #1b1e3a; --ink: #eceefa; --muted: #a5a9c8; --line: #33375a;
   --you: #f29e4c; --actual: #8fb0ff; --others: #c9a3e6; --dot: #3a3e63; --focus: #f29e4c; color-scheme: dark;
+  --r-eu: #8fb0ff; --r-na: #5f74ad; --r-la: #f29e4c; --r-as: #6fcab4; --r-af: #c9a3e6; --r-ot: #7d819c; --onseg: #12142a;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -85,6 +88,17 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 .notes { font-size: .88rem; color: var(--muted); }
 footer { font-size: .85rem; color: var(--muted); }
 .hidden { display: none !important; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart text { font-family: var(--body); }
+.fig-note { font-size: .8rem; color: var(--muted); margin: 0; max-width: 64ch; }
+.stack { display: grid; gap: .6rem; }
+.stack-row { display: grid; grid-template-columns: 3.2rem 1fr; gap: .6rem; align-items: center; font-variant-numeric: tabular-nums; }
+.stack-row .yr { font-weight: 700; }
+.stack-bar { display: flex; height: 2.1rem; border-radius: 5px; overflow: hidden; }
+.stack-bar span { display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; color: var(--onseg); white-space: nowrap; overflow: hidden; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .85rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.sw { width: .85rem; height: .85rem; border-radius: 2px; display: inline-block; }
 @media (max-width: 560px) { .card { padding: 1.1rem; } .sumtable td:not(:first-child) { width: 4.5rem; } }
 </style>
 </head>
@@ -93,7 +107,7 @@ footer { font-size: .85rem; color: var(--muted); }
   <header>
     <div class="kicker">A companion to <em>A Sociology Experiment</em>, Chapter 12: Immigration and Urbanization · By Gwen Sharp · <a href="https://x.com/gsharpokie">@gsharpokie</a></div>
     <h1>Guess the Share</h1>
-    <p class="lede">How many people in the United States are immigrants, and who are they? Make five guesses. After each one, you’ll see the real number. An immigrant here means anyone living in the U.S. who was born in another country and wasn’t a U.S. citizen at birth.</p>
+    <p class="lede">How many people in the United States are immigrants, and who are they? Make seven guesses about today and the past. After each one, you’ll see the real number. An immigrant here means anyone living in the U.S. who was born in another country and wasn’t a U.S. citizen at birth.</p>
   </header>
 
   <section class="card" id="quiz" aria-live="polite">
@@ -120,12 +134,35 @@ footer { font-size: .85rem; color: var(--muted); }
     <div class="actions"><button class="primary" id="again">Start over</button></div>
   </section>
 
+  <section class="card hidden after chart" id="history">
+    <h2>Then and now: the immigrant share since 1850</h2>
+    <div id="shareChart"></div>
+    <p class="fig-note">Percentage of U.S. residents who were born in another country, from each census, 1850 to 2010, and the Census Bureau’s 2024 American Community Survey.</p>
+    <p class="take">Today’s share isn’t new. Immigrants were 13% to 15% of the population in every census from 1860 to 1920. The share then fell for 50 years, to a low of 4.7% in 1970, and has climbed back since. In 2024 it matched the 1890 record of 14.8%.</p>
+  </section>
+
+  <section class="card hidden after">
+    <h2>Then and now: where immigrants were born</h2>
+    <div class="legend" aria-hidden="true">
+      <span><span class="sw" style="background:var(--r-eu)"></span>Europe</span>
+      <span><span class="sw" style="background:var(--r-na)"></span>Canada and other Northern America</span>
+      <span><span class="sw" style="background:var(--r-la)"></span>Latin America</span>
+      <span><span class="sw" style="background:var(--r-as)"></span>Asia</span>
+      <span><span class="sw" style="background:var(--r-af)"></span>Africa</span>
+      <span><span class="sw" style="background:var(--r-ot)"></span>Other</span>
+    </div>
+    <div class="stack" id="regions"></div>
+    <p class="fig-note">Percentage of all immigrants living in the U.S. in each year. In 1960, Africa is part of “Other.” In 2024, “Other” is Northern America and Oceania.</p>
+    <p class="take">The share is similar to a century ago, but the people are not. In 1850, 92% of immigrants were born in Europe. In 1960 it was still 75%, and the largest group was from Italy (13% of all immigrants), followed by Germany, Canada, the United Kingdom, and Poland. In 2024, 10% were born in Europe, about half in Latin America, and almost a third in Asia. Mexico was the largest country of origin, at 22%.</p>
+  </section>
+
   <section class="card prose hidden after">
     <h2>The fuller picture</h2>
     <p><strong>Almost everyone guesses too high.</strong> In a 2018 study, about 4,500 U.S.-born adults guessed, on average, that 36% of the U.S. population were immigrants. At the time, about 10% were legal immigrants and 13.5% were immigrants of any status. People in France, Germany, Italy, Sweden, and the United Kingdom overestimated too. The pattern held across political parties, education levels, and incomes.</p>
     <p><strong>It isn’t only immigrants.</strong> People tend to overestimate the size of small groups in general and underestimate large ones. Psychologists who study this argue it’s partly a quirk in how we turn hunches into percentages, and it shouldn’t be read only as fear or bias.</p>
     <p><strong>Who people think immigrants are matters more than how many.</strong> The same study found that the guessed <em>number</em> of immigrants didn’t predict much about people’s views. What did was what they believed about immigrants: how hard they work, how educated they are, and how much they rely on government help. People who personally knew an immigrant were more supportive of immigration.</p>
-    <p><strong>The share is high by historical standards, and it recently fell.</strong> Immigrants were 14.8% of the population in 1890 and 4.7% in 1970. The share reached a record 15.8% in January 2025, then dropped to 15.4% by June 2025, the first decline since the 1960s. Many countries have higher shares; in Canada, about 22% of residents are immigrants.</p>
+    <p><strong>The share is back near its historic high, and it recently fell.</strong> Immigrants were 14.8% of the population in 1890, 4.7% in 1970, and 14.8% again in 2024, according to the Census Bureau. Pew’s estimates, which use a different monthly survey, put the share at a record 15.8% in January 2025 and 15.4% by June 2025, the first decline since the 1960s. Many countries have higher shares; in Canada, about 22% of residents are immigrants.</p>
+    <p><strong>Laws shaped both the share and the origins.</strong> In the 1920s, Congress set quotas by national origin that sharply limited immigration, especially from Southern and Eastern Europe, Asia, and Africa. The immigrant share fell for the next half century. In 1965, Congress ended the national-origin quotas, and immigration from Latin America and Asia grew. The shift from Europe to Latin America and Asia followed a change in policy, along with changes in the world economy.</p>
     <h3>Talk about it</h3>
     <ol>
       <li>Which of your guesses was furthest off? Where did your picture come from?</li>
@@ -133,14 +170,16 @@ footer { font-size: .85rem; color: var(--muted); }
       <li>Giving people the correct numbers barely changed their views on immigration policy. Telling them a story about one hardworking immigrant changed views more. What does that suggest about how people form opinions?</li>
       <li>How do news coverage and political speeches shape which immigrants come to mind first?</li>
       <li>Does it matter whether people know the real number? What decisions, personal or political, might depend on it?</li>
+      <li>The immigrant share today is about what it was in 1890 and 1910. What was similar about how Americans reacted to immigration then and now? What’s different?</li>
     </ol>
   </section>
 
   <section class="notes prose hidden after">
     <h3>About the data</h3>
-    <p><strong>Actual figures:</strong> Pew Research Center’s analysis of Census Bureau data. The share of the population and of the labor force are for June 2025. The shares born in Mexico and without legal authorization are for 2023, the latest detailed estimates. Historical shares are from the decennial census.</p>
+    <p><strong>Actual figures:</strong> Pew Research Center’s analysis of Census Bureau data. The share of the population and of the labor force are for June 2025. The shares born in Mexico and without legal authorization are for 2023, the latest detailed estimates. </p>
+    <p><strong>Then and now:</strong> Shares of the population from 1850 to 2010 and regions and countries of birth in 1960 are from the Census Bureau’s decennial censuses (2010 is from the American Community Survey). The 2024 share and regions of birth and the 1850 Europe figure are from a 2026 Census Bureau report. The shares from Italy (1960) and Mexico (2024) are from the Migration Policy Institute. The 2024 “Other” figure (2.2%) is what’s left after the four regions the Census Bureau reported.</p>
     <p><strong>What Americans guessed:</strong> Alesina, Miano and Stantcheva surveyed 4,500 U.S.-born adults in January and February 2018. Their study counted only legal immigrants, so its “actual” figures (10% of the population; about 10% of immigrants Muslim) are for legal immigrants in 2018. This page compares each guess with the figure that matches its question.</p>
-    <p><strong>Sources:</strong> Pew Research Center, <a href="https://www.pewresearch.org/short-reads/2025/08/21/key-findings-about-us-immigrants/">“What the Data Says about Immigrants in the U.S.”</a> (August 21, 2025). Alesina, Alberto, Armando Miano and Stefanie Stantcheva. 2023. <a href="https://www.nber.org/papers/w24733">“Immigration and Redistribution.”</a> <em>Review of Economic Studies</em> 90(1): 1–39. Landy, David, Brian Guay and Tyler Marghetis. 2018. “Bias and Ignorance in Demographic Perception.” <em>Psychonomic Bulletin &amp; Review</em> 25: 1606–1618.</p>
+    <p><strong>Sources:</strong> Gryn, Thomas, and Amy Smith. 2026. <a href="https://www.census.gov/library/stories/2026/07/foreign-born-population-250-year-history.html">“Foreign-Born Population in the United States Changed Significantly in Both Numbers and Countries of Origin.”</a> U.S. Census Bureau. U.S. Census Bureau. 2013. <a href="https://www.census.gov/content/dam/Census/library/visualizations/2013/comm/foreign-born.pdf">“America’s Foreign Born in the Last 50 Years.”</a> Gibson, Campbell, and Kay Jung. 2006. <a href="https://www.census.gov/library/working-papers/2006/demo/POP-twps0081.html">“Historical Census Statistics on the Foreign-Born Population of the United States: 1850 to 2000.”</a> U.S. Census Bureau Working Paper 81. Migration Policy Institute. 2026. <a href="https://www.migrationpolicy.org/article/frequently-requested-statistics-immigrants-and-immigration-united-states">“Frequently Requested Statistics on Immigrants and Immigration in the United States.”</a> Pew Research Center, <a href="https://www.pewresearch.org/short-reads/2025/08/21/key-findings-about-us-immigrants/">“What the Data Says about Immigrants in the U.S.”</a> (August 21, 2025). Alesina, Alberto, Armando Miano and Stefanie Stantcheva. 2023. <a href="https://www.nber.org/papers/w24733">“Immigration and Redistribution.”</a> <em>Review of Economic Studies</em> 90(1): 1–39. Landy, David, Brian Guay and Tyler Marghetis. 2018. “Bias and Ignorance in Demographic Perception.” <em>Psychonomic Bulletin &amp; Review</em> 25: 1606–1618.</p>
     <h3>How to cite this page</h3>
     <p>Sharp, Gwen. 2026. “Guess the Share.” <a href="https://gsharpokie.github.io/immigrantshare/">https://gsharpokie.github.io/immigrantshare/</a></p>
     <p>Spot an error? <a href="https://github.com/gsharpokie/immigrantshare/issues/new">Suggest a correction</a> (needs a free GitHub account).</p>
@@ -167,7 +206,20 @@ const Q = [
     note: "Americans’ average guess was 23. In every country in the study, people overestimated the Muslim share of immigrants and underestimated the Christian share." },
   { q: "Out of every 100 workers in the U.S., how many are immigrants?", short: "Workers who are immigrants",
     actual: 19, when: "June 2025",
-    note: "Immigrants are a bigger share of workers than of the population, in part because a larger share of them are working-age adults." }
+    note: "Immigrants are a bigger share of workers than of the population, in part because a larger share of them are working-age adults." },
+  { q: "Now go back in time. In 1970, out of every 100 people living in the U.S., how many were immigrants?", short: "People in the U.S. who were immigrants in 1970",
+    actual: 4.7, when: "1970 census",
+    note: "That’s the lowest share ever recorded, after 50 years of decline. In 1890 it was 14.8, about the same as today." },
+  { q: "In 1960, 75 of every 100 immigrants in the U.S. were born in Europe. In 2024, out of every 100 immigrants, how many were born in Europe?", short: "Immigrants born in Europe, 2024 (75 in 1960)",
+    actual: 9.7, when: "2024",
+    note: "In 2024, about 51 in 100 immigrants were born in Latin America and 31 in Asia. In 1850, 92 in 100 were born in Europe." }
+];
+// Percent of U.S. residents who were foreign born: decennial census 1850-2000, ACS 2010 and 2024.
+const SHARE = [[1850, 9.7], [1860, 13.2], [1870, 14.4], [1880, 13.3], [1890, 14.8], [1900, 13.6], [1910, 14.7], [1920, 13.2], [1930, 11.6], [1940, 8.8], [1950, 6.9], [1960, 5.4], [1970, 4.7], [1980, 6.2], [1990, 7.9], [2000, 11.1], [2010, 12.9], [2024, 14.8]];
+// Region of birth, percent of the foreign born. 1960: decennial census. 2024: ACS (Other = remainder).
+const REGIONS = [
+  [1960, [["Europe", 75, "--r-eu"], ["Northern America", 10, "--r-na"], ["Latin America", 9, "--r-la"], ["Asia", 5, "--r-as"], ["Other", 1, "--r-ot"]]],
+  [2024, [["Europe", 9.7, "--r-eu"], ["Latin America", 51.4, "--r-la"], ["Asia", 30.8, "--r-as"], ["Africa", 5.9, "--r-af"], ["Other", 2.2, "--r-ot"]]]
 ];
 const $ = id => document.getElementById(id);
 const guesses = new Array(Q.length).fill(null);
@@ -186,6 +238,22 @@ function grid(n, color) {
 }
 function box(n, cap, color) {
   return `<div class="gridbox"><div class="num" style="color:${color}">${n}</div><div class="cap">${cap}</div>${grid(n, color)}</div>`;
+}
+function shareChart() {
+  const W = 700, H = 320, L = 36, R = 16, T = 22, B = 30, max = 16;
+  const x = y => L + (y - 1850) / (2024 - 1850) * (W - L - R), y = v => T + (1 - v / max) * (H - T - B);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="scT scD"><title id="scT">Immigrant share of the U.S. population, 1850 to 2024</title><desc id="scD">${SHARE.map(([yr, v]) => yr + ": " + v + "%").join(", ")}.</desc>`;
+  for (let v = 0; v <= max; v += 4) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="var(--muted)">${v}%</text>`;
+  for (let yr = 1850; yr <= 2000; yr += 25) s += `<text x="${x(yr)}" y="${H - 8}" text-anchor="middle" font-size="12" fill="var(--muted)">${yr}</text>`;
+  s += `<text x="${x(2024)}" y="${H - 8}" text-anchor="end" font-size="12" fill="var(--muted)">2024</text>`;
+  s += `<path d="${SHARE.map(([yr, v], i) => (i ? "L" : "M") + x(yr).toFixed(1) + "," + y(v).toFixed(1)).join("")}" fill="none" stroke="var(--actual)" stroke-width="3" stroke-linejoin="round"/>`;
+  for (const [yr, v] of SHARE) s += `<circle cx="${x(yr)}" cy="${y(v)}" r="3.2" fill="var(--actual)"/>`;
+  for (const [yr, v, anchor, dy] of [[1890, 14.8, "middle", -10], [1970, 4.7, "middle", 20], [2024, 14.8, "end", -10]])
+    s += `<text x="${x(yr)}" y="${y(v) + dy}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="var(--ink)">${yr}: ${v}%</text>`;
+  return s + "</svg>";
+}
+function regionBars() {
+  return REGIONS.map(([yr, segs]) => `<div class="stack-row"><span class="yr">${yr}</span><div class="stack-bar" role="img" aria-label="${yr}: ${segs.map(([n, v]) => n + " " + v + "%").join(", ")}">${segs.map(([n, v, c]) => `<span style="width:${v}%;background:var(${c})" title="${n}: ${v}%">${v >= 7 ? Math.round(v) + "%" : ""}</span>`).join("")}</div></div>`).join("");
 }
 function render() {
   if (idx >= Q.length) return finish();
@@ -218,6 +286,7 @@ function finish() {
   let h = `<table class="sumtable"><caption>All numbers are out of 100 (percentages). “—” means the survey didn’t ask that question.</caption><thead><tr><th scope="col">Out of every 100…</th>${played ? '<th scope="col">Your guess</th>' : ""}<th scope="col">Actual</th><th scope="col">Americans’ average guess</th></tr></thead><tbody>`;
   Q.forEach((q, i) => h += `<tr><td>${q.short}</td>${played ? `<td style="color:var(--you)">${guesses[i] ?? "—"}</td>` : ""}<td style="color:var(--actual)">${q.actual}</td><td style="color:var(--others)">${q.others ?? "—"}</td></tr>`);
   $("sum").innerHTML = h + "</tbody></table>";
+  $("shareChart").innerHTML = shareChart(); $("regions").innerHTML = regionBars();
   if (played) {
     const done = Q.map((q, i) => [q, guesses[i]]).filter(([, g]) => g !== null);
     const high = done.filter(([q, g]) => g > q.actual + 3).length;
@@ -230,7 +299,7 @@ $("lock").addEventListener("click", reveal);
 $("next").addEventListener("click", () => { idx++; render(); });
 $("skip").addEventListener("click", () => { idx = Q.length; finish(); });
 $("again").addEventListener("click", () => { guesses.fill(null); idx = 0; document.querySelectorAll(".after").forEach(e => e.classList.add("hidden")); $("quiz").classList.remove("hidden"); render(); window.scrollTo(0, 0); });
-if (location.hash === "#answers") { idx = Q.length; finish(); } else render();
+if (location.hash === "#answers" || location.hash === "#history") { idx = Q.length; finish(); } else render();
 </script>
 </body>
 </html>
