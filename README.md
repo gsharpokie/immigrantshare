@@ -1,6 +1,6 @@
 # Guess the Share
 
-An interactive guessing game about immigration in the United States. Students make seven “out of 100” guesses about today and the past, see each real figure drawn as a grid of 100 people, and compare their guesses with what Americans guessed in a national survey. By Gwen Sharp, as a companion to Chapter 12 (Immigration and Urbanization) of *A Sociology Experiment*.
+An interactive guessing game about immigration in the United States. Students make seven “out of 100” guesses about today and the past, see each real figure drawn as a grid of 100 people, and compare their guesses with what Americans guessed in a national survey. By Gwen Sharp.
 
 **Live site:** https://gsharpokie.github.io/immigrantshare/
 
