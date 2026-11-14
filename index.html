@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guess the Share</title>
+<meta name="description" content="Out of every 100 people in the U.S., how many are immigrants? Make five guesses, then see the real numbers and what most Americans guess.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gsharpokie.github.io/immigrantshare/">
+<meta property="og:title" content="Guess the Share">
+<meta property="og:description" content="Out of every 100 people in the U.S., how many are immigrants? Make five guesses, then see the real numbers and what most Americans guess.">
+<meta property="og:image" content="https://gsharpokie.github.io/immigrantshare/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Guess the Share: a grid of 100 people with 15 highlighted as immigrants, compared with the 36 Americans guessed.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@gsharpokie">
+<meta name="twitter:title" content="Guess the Share">
+<meta name="twitter:description" content="Out of every 100 people in the U.S., how many are immigrants? Make five guesses, then see the real numbers and what most Americans guess.">
+<meta name="twitter:image" content="https://gsharpokie.github.io/immigrantshare/preview.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23242a4a'/%3E%3Ccircle cx='9' cy='9' r='3.5' fill='%23f29e4c'/%3E%3Ccircle cx='16' cy='9' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='23' cy='9' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='9' cy='16' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='23' cy='16' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='9' cy='23' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='16' cy='23' r='3.5' fill='%23c9cde6'/%3E%3Ccircle cx='23' cy='23' r='3.5' fill='%23c9cde6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: one column. One question at a time; every answer is drawn as a 10x10 grid of 100 people
+   so "out of 100" stays concrete. A summary and context follow the last question. */
+:root {
+  --paper: #f3f3f7; --surface: #ffffff; --ink: #1d2140; --muted: #5b6080; --line: #d7d9e6;
+  --you: #b3541e; --actual: #2a4fa8; --others: #8a5aa8; --dot: #d3d6e6;
+  --focus: #b3541e;
+  --display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --body: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12142a; --surface: #1b1e3a; --ink: #eceefa; --muted: #a5a9c8; --line: #33375a;
+    --you: #f29e4c; --actual: #8fb0ff; --others: #c9a3e6; --dot: #3a3e63; --focus: #f29e4c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12142a; --surface: #1b1e3a; --ink: #eceefa; --muted: #a5a9c8; --line: #33375a;
+  --you: #f29e4c; --actual: #8fb0ff; --others: #c9a3e6; --dot: #3a3e63; --focus: #f29e4c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 1.05rem; line-height: 1.55; }
+.wrap { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1.6rem; }
+header { display: grid; gap: .45rem; }
+.kicker { font-size: .85rem; color: var(--muted); }
+.kicker a, footer a, .notes a, .prose a { color: var(--ink); }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2.2rem, 8vw, 3.4rem); line-height: 1.02; margin: 0; letter-spacing: -.02em; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 1.4rem; line-height: 1.2; margin: 0; text-wrap: balance; }
+h3 { font-family: var(--display); font-weight: 600; font-size: 1.08rem; margin: 0; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem; display: grid; gap: 1rem; }
+.meta { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); }
+.progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--ink); }
+.q { font-size: 1.2rem; font-weight: 600; margin: 0; text-wrap: balance; }
+.guess-row { display: flex; align-items: center; gap: 1rem; }
+.guess-row input { flex: 1; accent-color: var(--you); height: 2rem; }
+.guess-val { font-family: var(--display); font-weight: 800; font-size: 2rem; min-width: 3ch; text-align: right; color: var(--you); font-variant-numeric: tabular-nums; }
+.scale { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); }
+button { font: inherit; }
+.primary { font-weight: 600; padding: .65rem 1.2rem; border-radius: 10px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; }
+.linkish { font-size: .9rem; background: none; border: none; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; }
+.actions { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.grids { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; }
+.gridbox { display: grid; gap: .35rem; }
+.gridbox .num { font-family: var(--display); font-weight: 800; font-size: 1.7rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.gridbox .cap { font-size: .85rem; color: var(--muted); }
+.gridbox svg { width: 100%; max-width: 13rem; height: auto; display: block; }
+.take { margin: 0; max-width: 62ch; }
+.sum-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: .3rem 1rem; align-items: baseline; padding: .5rem 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.sum-row.head { border-top: none; font-size: .8rem; color: var(--muted); }
+.sum-row span:not(:first-child) { text-align: right; min-width: 3.2rem; font-weight: 700; }
+.prose p, .prose ol { margin: 0 0 .7rem; max-width: 64ch; }
+.prose li { margin-bottom: .4rem; }
+.notes { font-size: .88rem; color: var(--muted); }
+footer { font-size: .85rem; color: var(--muted); }
+.hidden { display: none !important; }
+@media (max-width: 560px) { .card { padding: 1.1rem; } .sum-row { gap: .3rem .6rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">A companion to <em>A Sociology Experiment</em>, Chapter 12: Immigration and Urbanization · By Gwen Sharp · <a href="https://x.com/gsharpokie">@gsharpokie</a></div>
+    <h1>Guess the Share</h1>
+    <p class="lede">How many people in the United States are immigrants, and who are they? Make five guesses. After each one, you’ll see the real number. An immigrant here means anyone living in the U.S. who was born in another country and wasn’t a U.S. citizen at birth.</p>
+  </header>
+
+  <section class="card" id="quiz" aria-live="polite">
+    <div class="meta"><span id="counter"></span><button class="linkish" id="skip">Skip to all the answers</button></div>
+    <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+    <p class="q" id="qText"></p>
+    <div id="guessBlock">
+      <div class="guess-row"><input type="range" id="slider" min="0" max="100" value="50" aria-label="Your guess, out of 100"><output id="val" class="guess-val" for="slider">50</output></div>
+      <div class="scale"><span>0</span><span>50</span><span>100</span></div>
+    </div>
+    <div id="reveal" class="hidden" style="display:grid;gap:1rem">
+      <div class="grids" id="grids"></div>
+      <p class="take" id="take"></p>
+    </div>
+    <div class="actions">
+      <button class="primary" id="lock">Lock in my guess</button>
+      <button class="primary hidden" id="next">Next question</button>
+    </div>
+  </section>
+
+  <section class="card hidden after">
+    <h2 id="sumHead">How did you do?</h2>
+    <div id="sum"></div>
+    <div class="actions"><button class="primary" id="again">Start over</button></div>
+  </section>
+
+  <section class="card prose hidden after">
+    <h2>The fuller picture</h2>
+    <p><strong>Almost everyone guesses too high.</strong> In a 2018 study of about 22,500 people in six countries, the average American guessed that 36% of the U.S. population were immigrants. At the time, about 10% were legal immigrants and 13.5% were immigrants of any status. People in France, Germany, Italy, Sweden, and the United Kingdom overestimated too. The pattern held across political parties, education levels, and incomes.</p>
+    <p><strong>It isn’t only immigrants.</strong> People tend to overestimate the size of small groups in general and underestimate large ones. Psychologists who study this argue it’s partly a quirk in how we turn hunches into percentages, and it shouldn’t be read only as fear or bias.</p>
+    <p><strong>Who people think immigrants are matters more than how many.</strong> The same study found that the guessed <em>number</em> of immigrants didn’t predict much about people’s views. What did was what they believed about immigrants: how hard they work, how educated they are, and how much they rely on government help. People who personally knew an immigrant were more supportive of immigration.</p>
+    <p><strong>The share is high by historical standards, and it recently fell.</strong> Immigrants were 14.8% of the population in 1890 and 4.7% in 1970. The share reached a record 15.8% in January 2025, then dropped to 15.4% by June 2025, the first decline since the 1960s. Many countries have higher shares; in Canada, about 22% of residents are immigrants.</p>
+    <h3>Talk about it</h3>
+    <ol>
+      <li>Which of your guesses was furthest off? Where did your picture come from?</li>
+      <li>The study found that Americans living in areas with more immigrants overestimated <em>more</em>. Why might seeing immigrants in daily life lead to a higher guess for the whole country?</li>
+      <li>Giving people the correct numbers barely changed their views on immigration policy. Telling them a story about one hardworking immigrant changed views more. What does that suggest about how people form opinions?</li>
+      <li>How do news coverage and political speeches shape which immigrants come to mind first?</li>
+      <li>Does it matter whether people know the real number? What decisions, personal or political, might depend on it?</li>
+    </ol>
+  </section>
+
+  <section class="notes prose hidden after">
+    <h3>About the data</h3>
+    <p><strong>Actual figures:</strong> Pew Research Center’s analysis of Census Bureau data. The share of the population and of the labor force are for June 2025. The shares born in Mexico and without legal authorization are for 2023, the latest detailed estimates. Historical shares are from the decennial census.</p>
+    <p><strong>What Americans guessed:</strong> Alesina, Miano and Stantcheva surveyed 4,500 U.S.-born adults in January and February 2018. Their study counted only legal immigrants, so its “actual” figures (10% of the population; about 10% of immigrants Muslim) are for legal immigrants in 2018. This page compares each guess with the figure that matches its question.</p>
+    <p><strong>Sources:</strong> Pew Research Center, <a href="https://www.pewresearch.org/short-reads/2025/08/21/key-findings-about-us-immigrants/">“What the Data Says about Immigrants in the U.S.”</a> (August 21, 2025). Alesina, Alberto, Armando Miano and Stefanie Stantcheva. 2023. <a href="https://www.nber.org/papers/w24733">“Immigration and Redistribution.”</a> <em>Review of Economic Studies</em> 90(1): 1–39. Landy, David, Brian Guay and Tyler Marghetis. 2018. “Bias and Ignorance in Demographic Perception.” <em>Psychonomic Bulletin &amp; Review</em> 25: 1606–1618.</p>
+    <h3>How to cite this page</h3>
+    <p>Sharp, Gwen. 2026. “Guess the Share.” <a href="https://gsharpokie.github.io/immigrantshare/">https://gsharpokie.github.io/immigrantshare/</a></p>
+    <p>Spot an error? <a href="https://github.com/gsharpokie/immigrantshare/issues/new">Suggest a correction</a> (needs a free GitHub account).</p>
+  </section>
+
+  <footer>Created by Gwen Sharp (<a href="https://x.com/gsharpokie">@gsharpokie</a>). Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.</footer>
+</div>
+
+<script>
+// actual: the real figure. others: Americans' average guess in Alesina, Miano & Stantcheva's 2018 survey (only where they asked).
+// note: one sentence of context shown after the reveal.
+const Q = [
+  { q: "Out of every 100 people living in the U.S., how many are immigrants?", short: "People in the U.S. who are immigrants",
+    actual: 15.4, when: "June 2025", others: 36,
+    note: "In a 2018 survey, Americans’ average guess was 36. The real figure then was about 13.5." },
+  { q: "Out of every 100 immigrants in the U.S., how many were born in Mexico?", short: "Immigrants born in Mexico",
+    actual: 22, when: "2023",
+    note: "Mexico is still the largest country of origin, but its share fell from 29 in 2010. Among immigrants who arrived from 2021 to 2023, only 11 in 100 were from Mexico." },
+  { q: "Out of every 100 immigrants in the U.S., how many are in the country without legal authorization?", short: "Immigrants without legal authorization",
+    actual: 27, when: "2023",
+    note: "That means about 73 in 100 are naturalized citizens, lawful permanent residents, or here on temporary visas." },
+  { q: "Out of every 100 immigrants in the U.S., how many are Muslim?", short: "Immigrants who are Muslim",
+    actual: 10, when: "2018, legal immigrants", others: 23,
+    note: "Americans’ average guess was 23. In every country in the study, people overestimated the Muslim share of immigrants and underestimated the Christian share." },
+  { q: "Out of every 100 workers in the U.S., how many are immigrants?", short: "Workers who are immigrants",
+    actual: 19, when: "June 2025",
+    note: "Immigrants are a bigger share of workers than of the population, in part because a larger share of them are working-age adults." }
+];
+const $ = id => document.getElementById(id);
+const guesses = new Array(Q.length).fill(null);
+let idx = 0;
+
+function grid(n, color) {
+  // 10x10 people; fill the first n (a partial last dot for decimals)
+  let s = `<svg viewBox="0 0 110 110" aria-hidden="true">`;
+  for (let i = 0; i < 100; i++) {
+    const cx = 6 + (i % 10) * 11, cy = 6 + Math.floor(i / 10) * 11;
+    const f = Math.max(0, Math.min(1, n - i));
+    s += `<circle cx="${cx}" cy="${cy}" r="4.3" fill="var(--dot)"/>`;
+    if (f > 0) s += `<circle cx="${cx}" cy="${cy}" r="${(4.3 * Math.sqrt(f)).toFixed(2)}" fill="${color}"/>`;
+  }
+  return s + "</svg>";
+}
+function box(n, cap, color) {
+  return `<div class="gridbox"><div class="num" style="color:${color}">${n}</div><div class="cap">${cap}</div>${grid(n, color)}</div>`;
+}
+function render() {
+  if (idx >= Q.length) return finish();
+  const q = Q[idx];
+  $("counter").textContent = `Question ${idx + 1} of ${Q.length}`;
+  $("bar").style.width = (idx / Q.length * 100) + "%";
+  $("qText").textContent = q.q;
+  $("slider").disabled = false; $("slider").value = 50; $("val").textContent = "50";
+  $("guessBlock").classList.remove("hidden");
+  $("reveal").classList.add("hidden");
+  $("lock").classList.remove("hidden"); $("next").classList.add("hidden");
+  $("next").textContent = idx === Q.length - 1 ? "See my results" : "Next question";
+}
+function reveal() {
+  const q = Q[idx], g = +$("slider").value;
+  guesses[idx] = g;
+  $("slider").disabled = true;
+  $("grids").innerHTML = box(g, "Your guess", "var(--you)") + box(q.actual, `Actual (${q.when})`, "var(--actual)") +
+    (q.others != null ? box(q.others, "Americans’ average guess (2018)", "var(--others)") : "");
+  const off = Math.round(Math.abs(g - q.actual) * 10) / 10;
+  const dir = off <= 3 ? "Very close." : g > q.actual ? `You guessed ${off} too high.` : `You guessed ${off} too low.`;
+  $("take").innerHTML = `<strong>${dir}</strong> ${q.note}`;
+  $("reveal").classList.remove("hidden");
+  $("lock").classList.add("hidden"); $("next").classList.remove("hidden"); $("next").focus();
+}
+function finish() {
+  $("quiz").classList.add("hidden");
+  document.querySelectorAll(".after").forEach(e => e.classList.remove("hidden"));
+  const played = guesses.some(g => g !== null);
+  let h = `<div class="sum-row head"><span></span>${played ? "<span>You</span>" : ""}<span>Actual</span><span>Americans guessed</span></div>`;
+  Q.forEach((q, i) => h += `<div class="sum-row"><span>${q.short}</span>${played ? `<span style="color:var(--you)">${guesses[i] ?? "—"}</span>` : ""}<span style="color:var(--actual)">${q.actual}</span><span style="color:var(--others)">${q.others ?? "—"}</span></div>`);
+  $("sum").innerHTML = h;
+  if (played) {
+    const done = Q.map((q, i) => [q, guesses[i]]).filter(([, g]) => g !== null);
+    const high = done.filter(([q, g]) => g > q.actual + 3).length;
+    $("sumHead").textContent = high > done.length / 2 ? `You guessed too high on ${high} of ${done.length}. So do most people.` : "How did you do?";
+  } else $("sumHead").textContent = "All the answers";
+  document.querySelector(".after").scrollIntoView({ block: "start" });
+}
+$("slider").addEventListener("input", e => $("val").textContent = e.target.value);
+$("lock").addEventListener("click", reveal);
+$("next").addEventListener("click", () => { idx++; render(); });
+$("skip").addEventListener("click", () => { idx = Q.length; finish(); });
+$("again").addEventListener("click", () => { guesses.fill(null); idx = 0; document.querySelectorAll(".after").forEach(e => e.classList.add("hidden")); $("quiz").classList.remove("hidden"); render(); window.scrollTo(0, 0); });
+if (location.hash === "#answers") { idx = Q.length; finish(); } else render();
+</script>
+</body>
+</html>
