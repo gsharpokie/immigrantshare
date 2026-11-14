@@ -74,15 +74,18 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid 
 .gridbox .cap { font-size: .85rem; color: var(--muted); }
 .gridbox svg { width: 100%; max-width: 13rem; height: auto; display: block; }
 .take { margin: 0; max-width: 62ch; }
-.sum-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: .3rem 1rem; align-items: baseline; padding: .5rem 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-.sum-row.head { border-top: none; font-size: .8rem; color: var(--muted); }
-.sum-row span:not(:first-child) { text-align: right; min-width: 3.2rem; font-weight: 700; }
+.sumtable { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.sumtable th, .sumtable td { padding: .55rem .5rem; border-top: 1px solid var(--line); text-align: right; vertical-align: bottom; }
+.sumtable th { border-top: none; font-size: .8rem; line-height: 1.25; color: var(--muted); font-weight: 600; }
+.sumtable th:first-child, .sumtable td:first-child { text-align: left; padding-left: 0; }
+.sumtable td:not(:first-child) { font-weight: 700; width: 6.5rem; }
+.sumtable caption { caption-side: bottom; text-align: left; font-size: .8rem; color: var(--muted); padding-top: .5rem; }
 .prose p, .prose ol { margin: 0 0 .7rem; max-width: 64ch; }
 .prose li { margin-bottom: .4rem; }
 .notes { font-size: .88rem; color: var(--muted); }
 footer { font-size: .85rem; color: var(--muted); }
 .hidden { display: none !important; }
-@media (max-width: 560px) { .card { padding: 1.1rem; } .sum-row { gap: .3rem .6rem; } }
+@media (max-width: 560px) { .card { padding: 1.1rem; } .sumtable td:not(:first-child) { width: 4.5rem; } }
 </style>
 </head>
 <body>
@@ -212,9 +215,9 @@ function finish() {
   $("quiz").classList.add("hidden");
   document.querySelectorAll(".after").forEach(e => e.classList.remove("hidden"));
   const played = guesses.some(g => g !== null);
-  let h = `<div class="sum-row head"><span></span>${played ? "<span>You</span>" : ""}<span>Actual</span><span>Americans guessed</span></div>`;
-  Q.forEach((q, i) => h += `<div class="sum-row"><span>${q.short}</span>${played ? `<span style="color:var(--you)">${guesses[i] ?? "—"}</span>` : ""}<span style="color:var(--actual)">${q.actual}</span><span style="color:var(--others)">${q.others ?? "—"}</span></div>`);
-  $("sum").innerHTML = h;
+  let h = `<table class="sumtable"><caption>All numbers are out of 100 (percentages). “—” means the survey didn’t ask that question.</caption><thead><tr><th scope="col">Out of every 100…</th>${played ? '<th scope="col">Your guess</th>' : ""}<th scope="col">Actual</th><th scope="col">Americans’ average guess</th></tr></thead><tbody>`;
+  Q.forEach((q, i) => h += `<tr><td>${q.short}</td>${played ? `<td style="color:var(--you)">${guesses[i] ?? "—"}</td>` : ""}<td style="color:var(--actual)">${q.actual}</td><td style="color:var(--others)">${q.others ?? "—"}</td></tr>`);
+  $("sum").innerHTML = h + "</tbody></table>";
   if (played) {
     const done = Q.map((q, i) => [q, guesses[i]]).filter(([, g]) => g !== null);
     const high = done.filter(([q, g]) => g > q.actual + 3).length;
