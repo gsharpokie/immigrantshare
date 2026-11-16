@@ -28,7 +28,7 @@
 :root {
   --paper: #f3f3f7; --surface: #ffffff; --ink: #1d2140; --muted: #5b6080; --line: #d7d9e6;
   --you: #b3541e; --actual: #2a4fa8; --others: #8a5aa8; --dot: #d3d6e6;
-  --r-eu: #2a4fa8; --r-na: #7a8fc4; --r-la: #b3541e; --r-as: #2f7d6b; --r-af: #8a5aa8; --r-ot: #8d91a8; --onseg: #ffffff;
+  --r-eu: #2a4fa8; --r-na: #7a8fc4; --r-la: #b3541e; --r-as: #2f7d6b; --r-af: #8a5aa8; --r-ot: #8d91a8; --onseg: #ffffff; --r-na-on: #14171b; --r-ot-on: #14171b;
   --focus: #b3541e;
   --display: "Sora", "Segoe UI", system-ui, sans-serif;
   --body: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -38,13 +38,13 @@
   :root:not([data-theme="light"]) {
     --paper: #12142a; --surface: #1b1e3a; --ink: #eceefa; --muted: #a5a9c8; --line: #33375a;
     --you: #f29e4c; --actual: #8fb0ff; --others: #c9a3e6; --dot: #3a3e63; --focus: #f29e4c; color-scheme: dark;
-  --r-eu: #8fb0ff; --r-na: #5f74ad; --r-la: #f29e4c; --r-as: #6fcab4; --r-af: #c9a3e6; --r-ot: #7d819c; --onseg: #12142a;
+  --r-eu: #8fb0ff; --r-na: #5f74ad; --r-la: #f29e4c; --r-as: #6fcab4; --r-af: #c9a3e6; --r-ot: #7d819c; --onseg: #12142a; --r-na-on: #ffffff; --r-ot-on: #ffffff;
   }
 }
 :root[data-theme="dark"] {
   --paper: #12142a; --surface: #1b1e3a; --ink: #eceefa; --muted: #a5a9c8; --line: #33375a;
   --you: #f29e4c; --actual: #8fb0ff; --others: #c9a3e6; --dot: #3a3e63; --focus: #f29e4c; color-scheme: dark;
-  --r-eu: #8fb0ff; --r-na: #5f74ad; --r-la: #f29e4c; --r-as: #6fcab4; --r-af: #c9a3e6; --r-ot: #7d819c; --onseg: #12142a;
+  --r-eu: #8fb0ff; --r-na: #5f74ad; --r-la: #f29e4c; --r-as: #6fcab4; --r-af: #c9a3e6; --r-ot: #7d819c; --onseg: #12142a; --r-na-on: #ffffff; --r-ot-on: #ffffff;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -100,6 +100,9 @@ footer { font-size: .85rem; color: var(--muted); }
 .legend span { display: inline-flex; align-items: center; gap: .35rem; }
 .sw { width: .85rem; height: .85rem; border-radius: 2px; display: inline-block; }
 @media (max-width: 560px) { .card { padding: 1.1rem; } .sumtable td:not(:first-child) { width: 4.5rem; } }
+
+/* Main landmark for screen readers; keeps the same spacing as before. */
+.wrap-main { display: grid; gap: inherit; min-width: 0; }
 </style>
 </head>
 <body>
@@ -109,6 +112,7 @@ footer { font-size: .85rem; color: var(--muted); }
     <h1>Guess the Share</h1>
     <p class="lede">How many people in the United States are immigrants, and who are they? Make seven guesses about today and the past. After each one, you’ll see the real number. An immigrant here means anyone living in the U.S. who was born in another country and wasn’t a U.S. citizen at birth.</p>
   </header>
+  <main class="wrap-main">
 
   <section class="card" id="quiz" aria-live="polite">
     <div class="meta"><span id="counter"></span><button class="linkish" id="skip">Skip to all the answers</button></div>
@@ -185,6 +189,7 @@ footer { font-size: .85rem; color: var(--muted); }
     <p>Spot an error? <a href="https://github.com/gsharpokie/immigrantshare/issues/new">Suggest a correction</a> (needs a free GitHub account).</p>
   </section>
 
+  </main>
   <footer>Created by Gwen Sharp (<a href="https://x.com/gsharpokie">@gsharpokie</a>). Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.</footer>
 </div>
 
@@ -253,7 +258,7 @@ function shareChart() {
   return s + "</svg>";
 }
 function regionBars() {
-  return REGIONS.map(([yr, segs]) => `<div class="stack-row"><span class="yr">${yr}</span><div class="stack-bar" role="img" aria-label="${yr}: ${segs.map(([n, v]) => n + " " + v + "%").join(", ")}">${segs.map(([n, v, c]) => `<span style="width:${v}%;background:var(${c})" title="${n}: ${v}%">${v >= 7 ? Math.round(v) + "%" : ""}</span>`).join("")}</div></div>`).join("");
+  return REGIONS.map(([yr, segs]) => `<div class="stack-row"><span class="yr">${yr}</span><div class="stack-bar" role="img" aria-label="${yr}: ${segs.map(([n, v]) => n + " " + v + "%").join(", ")}">${segs.map(([n, v, c]) => `<span style="width:${v}%;background:var(${c});color:var(${c}-on, var(--onseg))" title="${n}: ${v}%">${v >= 7 ? Math.round(v) + "%" : ""}</span>`).join("")}</div></div>`).join("");
 }
 function render() {
   if (idx >= Q.length) return finish();
